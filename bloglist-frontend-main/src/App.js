@@ -28,30 +28,40 @@ const App = () => {
       })
     }
   }, [])
+  function popMessage(message, duration, isError=false){
+    setMessage(message);
+    setErrorFlag(isError);
+    setTimeout(() => {
+      setMessage('');
+      setErrorFlag(false);
+    }, duration * 1000);
+  }
+  async function refreshBlogList(){
+    const blogs = await blogService.getAll()
+    setBlogs(blogs)
+  }
   const handleLogin = async (event) => {
     event.preventDefault()
     try{
-      console.log('logging in with', username, password)
+      console.log('logged in with', username, password)
+      popMessage("Logged in with", 3)
       const user = await loginService.login({username, password})
       blogService.setToken(user.token)
       window.localStorage.setItem('loggedUserBlogList', JSON.stringify(user));
       setUser(user)
       setUsername('')
       setPassword('')
-      const blogs = await blogService.getAll()
-      setBlogs( blogs )
+      await refreshBlogList()
     }
     catch(exception){
-      setMessage(`Wrong credentials ${exception.name}`);
-      setErrorFlag(true);
-      setTimeout(() => {
-        setMessage('');
-        setErrorFlag(false);
-      }, 3000);
+      popMessage(`Wrong username or password`, 3,true)
+      console.log(exception.name);
     }
   }
   const handleLogout = (event) =>{
     event.preventDefault();
+    popMessage("Logged out", 3)
+
     blogService.setToken(null);
     window.localStorage.removeItem('loggedUserBlogList');
     setUser(null);
@@ -59,6 +69,7 @@ const App = () => {
   }
   const handleCreateNew = async (event) =>{
     event.preventDefault();
+    popMessage(`New blog created: ${newTitle} by ${newAuthor}`, 3)
     console.log(event)
     const blog = {
       title: newTitle,
@@ -66,6 +77,7 @@ const App = () => {
       url: newUrl
     }
     const createdBlog = await blogService.createNew(blog)
+    await refreshBlogList()
     console.log(createdBlog)
   }
   if(user === null){
@@ -103,8 +115,13 @@ const App = () => {
   else{
     return (
       <div>
-        <h2>blogs</h2>
+        <h2>Blogs</h2>
+        <Notification
+          message={message}
+          errorFlag={errorFlag}
+        />
         <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
+        <h2>Create New</h2>
         <form onSubmit={handleCreateNew}>
           <div>
             Title:
@@ -135,6 +152,7 @@ const App = () => {
           </div>
             <button type="submit">Create</button>
         </form>
+        <h2>List</h2>
         <div>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
