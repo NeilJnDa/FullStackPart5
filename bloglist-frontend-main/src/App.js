@@ -16,6 +16,7 @@ const App = () => {
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
 
+  // Use local token to log in
   useEffect(()=>{
     const loggedUserJson = window.localStorage.getItem('loggedUserBlogList')
     if(loggedUserJson){
@@ -28,6 +29,7 @@ const App = () => {
       })
     }
   }, [])
+  //Pop up messages, a wrapper for notification
   function popMessage(message, duration, isError=false){
     setMessage(message);
     setErrorFlag(isError);
@@ -36,10 +38,12 @@ const App = () => {
       setErrorFlag(false);
     }, duration * 1000);
   }
+  //Get request: Blogs
   async function refreshBlogList(){
     const blogs = await blogService.getAll()
     setBlogs(blogs)
   }
+  //Login
   const handleLogin = async (event) => {
     event.preventDefault()
     try{
@@ -58,6 +62,7 @@ const App = () => {
       console.log(exception.name);
     }
   }
+  //Logout
   const handleLogout = (event) =>{
     event.preventDefault();
     popMessage("Logged out", 3)
@@ -67,6 +72,7 @@ const App = () => {
     setUser(null);
     setBlogs([])
   }
+  //New blog
   const handleCreateNew = async (event) =>{
     event.preventDefault();
     popMessage(`New blog created: ${newTitle} by ${newAuthor}`, 3)
@@ -80,6 +86,9 @@ const App = () => {
     await refreshBlogList()
     console.log(createdBlog)
   }
+
+  //JSX returned by react
+  //Log in page
   if(user === null){
     return(
       <div>
@@ -112,6 +121,7 @@ const App = () => {
       </div>
     )
   }
+  //Blog page
   else{
     return (
       <div>
@@ -161,7 +171,6 @@ const App = () => {
       </div>
     )
   }
-
 }
 
 export default App
