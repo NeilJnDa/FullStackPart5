@@ -16,5 +16,9 @@ const getAll = () => {
   const request = axios.get(baseUrl)
   return request.then(response => response.data)
 }
+const createNew = (blog) =>{
+  const request = axios.post(baseUrl, blog)
+  return request.then(response => response.data)
+}
 
-export default { setToken, getAll }
+export default { setToken, getAll, createNew }
