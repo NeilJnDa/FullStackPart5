@@ -4,6 +4,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import './index.css'
+import NewBlogForm from './services/NewBlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -12,6 +13,9 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
   const [errorFlag, setErrorFlag] = useState(false)
+
+  //Create new
+  const [newBlogVisible, setNewBlogVisible] = useState(false)
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
@@ -131,37 +135,17 @@ const App = () => {
           errorFlag={errorFlag}
         />
         <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
-        <h2>Create New</h2>
-        <form onSubmit={handleCreateNew}>
-          <div>
-            Title:
-            <input
-              name = "Title"
-              type="text"
-              value={newTitle}
-              onChange = {({target}) => setNewTitle(target.value)}
-            />
-          </div>
-          <div>
-            Author:
-            <input
-              name = "Author"
-              type="text"
-              value={newAuthor}
-              onChange = {({target}) => setNewAuthor(target.value)}
-            />
-          </div>
-          <div>
-            Url:
-            <input
-              name = "Url"
-              type="text"
-              value={newUrl}
-              onChange = {({target}) => setNewUrl(target.value)}
-            />
-          </div>
-            <button type="submit">Create</button>
-        </form>
+        <NewBlogForm
+          newBlogVisible = {newBlogVisible}
+          setNewBlogVisible = {setNewBlogVisible}
+          newTitle = {newTitle}
+          newAuthor = {newAuthor}
+          newUrl = {newUrl}
+          setNewTitle = {setNewTitle}
+          setNewAuthor = {setNewAuthor}
+          setNewUrl = {setNewUrl}
+          handleCreateNew = {handleCreateNew}
+        />
         <h2>List</h2>
         <div>
         {blogs.map(blog =>
