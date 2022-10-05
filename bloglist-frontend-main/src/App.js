@@ -10,7 +10,7 @@ import NewBlogForm from './services/NewBlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
@@ -19,7 +19,7 @@ const App = () => {
   const createToggleRef = useRef()
 
   // Use local token to log in
-  useEffect(()=>{
+  useEffect(() => {
     const loggedUserJson = window.localStorage.getItem('loggedUserBlogList')
     if(loggedUserJson){
       const user = JSON.parse(loggedUserJson)
@@ -27,55 +27,50 @@ const App = () => {
       blogService.setToken(user.token)
 
       blogService.getAll().then((blogs) => {
-        setBlogs(blogs);
+        setBlogs(blogs)
       })
     }
   }, [])
   //Pop up messages, a wrapper for notification
   function popMessage(message, duration, isError=false){
-    setMessage(message);
-    setErrorFlag(isError);
+    setMessage(message)
+    setErrorFlag(isError)
     setTimeout(() => {
-      setMessage('');
-      setErrorFlag(false);
-    }, duration * 1000);
-  }
-  //Get request: Blogs
-  async function refreshBlogList(){
-    const blogs = await blogService.getAll()
-    setBlogs(blogs)
+      setMessage('')
+      setErrorFlag(false)
+    }, duration * 1000)
   }
   //Login
   const handleLogin = async (event) => {
     event.preventDefault()
     try{
       console.log('logged in with', username, password)
-      popMessage("Logged in with", 3)
-      const user = await loginService.login({username, password})
+      popMessage('Logged in with', 3)
+      const user = await loginService.login({ username, password })
       blogService.setToken(user.token)
-      window.localStorage.setItem('loggedUserBlogList', JSON.stringify(user));
+      window.localStorage.setItem('loggedUserBlogList', JSON.stringify(user))
       setUser(user)
       setUsername('')
       setPassword('')
       await refreshBlogList()
     }
     catch(exception){
-      popMessage(`Wrong username or password`, 3,true)
-      console.log(exception.name);
+      popMessage('Wrong username or password', 3,true)
+      console.log(exception.name)
     }
   }
   //Logout
-  const handleLogout = (event) =>{
-    event.preventDefault();
-    popMessage("Logged out", 3)
+  const handleLogout = (event) => {
+    event.preventDefault()
+    popMessage('Logged out', 3)
 
-    blogService.setToken(null);
-    window.localStorage.removeItem('loggedUserBlogList');
-    setUser(null);
+    blogService.setToken(null)
+    window.localStorage.removeItem('loggedUserBlogList')
+    setUser(null)
     setBlogs([])
   }
   //New blog
-  const createNewBlog = async (newBlog) =>{
+  const createNewBlog = async (newBlog) => {
     try{
       popMessage(`New blog created: ${newBlog.title} by ${newBlog.author}`, 3)
       const createdBlog = await blogService.createNew(newBlog)
@@ -87,6 +82,11 @@ const App = () => {
       popMessage(`Create blog Error: ${exception.name}`, 3, true)
       console.error(exception)
     }
+  }
+  //Get request: Blogs
+  async function refreshBlogList(){
+    const blogs = await blogService.getAll()
+    setBlogs(blogs)
   }
 
   //JSX returned by react
@@ -102,20 +102,20 @@ const App = () => {
         <form onSubmit={handleLogin}>
           <div>
             Username
-            <input 
+            <input
               name = "Username"
               type="text"
               value={username}
-              onChange = {({target}) => setUsername(target.value)}
+              onChange = {({ target }) => setUsername(target.value)}
             />
           </div>
           <div>
             Password
-            <input 
+            <input
               name = "Password"
               type="text"
               value={password}
-              onChange = {({target}) => setPassword(target.value)}
+              onChange = {({ target }) => setPassword(target.value)}
             />
           </div>
           <button type="submit">login</button>
@@ -140,9 +140,9 @@ const App = () => {
         </Toggle>
         <h2>List</h2>
         <div>
-        {blogs.sort((a,b)=>b.likes - a.likes).map(blog =>
-          <Blog key={blog.id} blog={blog} refreshBlogList = {refreshBlogList} />
-        )}
+          {blogs.sort((a,b) => b.likes - a.likes).map(blog =>
+            <Blog key={blog.id} blog={blog} refreshBlogList = {refreshBlogList} user={user} />
+          )}
         </div>
       </div>
     )
