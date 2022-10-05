@@ -1,11 +1,8 @@
-import Toggle from "./Toggle"
+import blogService from "../services/blogs"
 import { useState } from "react"
 
-const Blog = ({blog}) => {
+const Blog = ({blog, refreshBlogList}) => {
   const [visible, setVisible] = useState(false)
-  const hideWhenVisible = {display: visible ? 'none': ''}
-  const showWhenVisible = {display: visible ? '': 'none'}
-
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -29,7 +26,10 @@ const Blog = ({blog}) => {
         {blog.url}
       </div>
       <div>
-        Likes {blog.likes} <button>Like</button>
+        Likes {blog.likes} <button onClick={()=>{
+          blogService.addLikes(blog)
+          refreshBlogList()
+        }}>Like</button>
       </div>
       <div>
         {blog.author} 
