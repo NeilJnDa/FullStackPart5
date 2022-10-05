@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import Toggle from './components/Toggle'
+
 import './index.css'
 import NewBlogForm from './services/NewBlogForm'
 
@@ -14,11 +16,7 @@ const App = () => {
   const [message, setMessage] = useState('')
   const [errorFlag, setErrorFlag] = useState(false)
 
-  //Create new
-  const [newBlogVisible, setNewBlogVisible] = useState(false)
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
+  const createToggleRef = useRef()
 
   // Use local token to log in
   useEffect(()=>{
@@ -77,18 +75,18 @@ const App = () => {
     setBlogs([])
   }
   //New blog
-  const handleCreateNew = async (event) =>{
-    event.preventDefault();
-    popMessage(`New blog created: ${newTitle} by ${newAuthor}`, 3)
-    console.log(event)
-    const blog = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl
+  const createNewBlog = async (newBlog) =>{
+    try{
+      popMessage(`New blog created: ${newBlog.title} by ${newBlog.author}`, 3)
+      const createdBlog = await blogService.createNew(newBlog)
+      await refreshBlogList()
+      createToggleRef.current.toggleVisibility()
+      console.log(createdBlog)
     }
-    const createdBlog = await blogService.createNew(blog)
-    await refreshBlogList()
-    console.log(createdBlog)
+    catch(exception){
+      popMessage(`Create blog Error: ${exception.name}`, 3, true)
+      console.error(exception)
+    }
   }
 
   //JSX returned by react
@@ -135,17 +133,11 @@ const App = () => {
           errorFlag={errorFlag}
         />
         <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
-        <NewBlogForm
-          newBlogVisible = {newBlogVisible}
-          setNewBlogVisible = {setNewBlogVisible}
-          newTitle = {newTitle}
-          newAuthor = {newAuthor}
-          newUrl = {newUrl}
-          setNewTitle = {setNewTitle}
-          setNewAuthor = {setNewAuthor}
-          setNewUrl = {setNewUrl}
-          handleCreateNew = {handleCreateNew}
-        />
+        <Toggle buttonLabel = 'Create New' ref = {createToggleRef}>
+          <NewBlogForm
+            createNewBlog={createNewBlog}
+          />
+        </Toggle>
         <h2>List</h2>
         <div>
         {blogs.map(blog =>
