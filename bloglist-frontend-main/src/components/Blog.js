@@ -1,7 +1,7 @@
 import blogService from '../services/blogs'
 import { useState } from 'react'
 
-const Blog = ({ blog, refreshBlogList, user }) => {
+const Blog = ({ blog, addLikeHandler, refreshBlogList, user }) => {
   const [visible, setVisible] = useState(false)
   const blogStyle = {
     paddingTop: 10,
@@ -27,7 +27,7 @@ const Blog = ({ blog, refreshBlogList, user }) => {
       </div>
       <div>
         Likes {blog.likes} <button onClick={() => {
-          blogService.addLikes(blog)
+          addLikeHandler(blog)
           refreshBlogList()
         }}>Like</button>
       </div>
@@ -43,9 +43,6 @@ const Blog = ({ blog, refreshBlogList, user }) => {
   )
 }
 const RemoveButton = ({ blog, refreshBlogList, user }) => {
-  console.log(user)
-  console.log(blog.user)
-
   if(user && blog.user.username &&  user.username === blog.user.username)
     return(
       <button onClick={() => {
