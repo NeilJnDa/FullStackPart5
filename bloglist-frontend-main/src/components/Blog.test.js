@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
+
 const blog = {
   id: '633c1e05725e00e429660093',
   title: 'NewBlog',
