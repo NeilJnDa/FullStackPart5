@@ -47,18 +47,27 @@ describe('Blog app', function() {
       const blog1 = {
         title : 'Title1',
         author: 'Author1',
-        url: 'http://...'
+        url: 'http://...',
+        likes: 1
       }
       const blog2 = {
         title : 'Title2',
         author: 'Author2',
-        url: 'http://...'
+        url: 'http://...',
+        likes: 2
+      }
+      const blog3 = {
+        title : 'Title3',
+        author: 'Author3',
+        url: 'http://...',
+        likes: 3
       }
       cy.request('POST', 'http://localhost:3003/api/users', user)
       cy.login(user.username, user.password)
         .then(function(){
           cy.addBlog(blog1)
           cy.addBlog(blog2)
+          cy.addBlog(blog3)
         })
       cy.visit('http://localhost:3000')
     })
@@ -94,13 +103,32 @@ describe('Blog app', function() {
         })
       cy.contains('New blog created: ')
     })
-    it.only('A blog can be deleted', function() {
+    it('A blog can be deleted', function() {
       cy.get('button:contains("View")').first().click()
       cy.get('button:contains("Remove")').first().as('removeButton')
 
-      cy.get('@removeButton').click().wait(1000).then(function(){
-        cy.contains('Title1').should('not.exist')
+      cy.get('@removeButton').click().then(function(){
+        cy.contains('Title3').should('not.exist')
       })
+    })
+    it.only('Blogs are ordered by the number of likes', function() {
+      cy.get('button:contains("View")').each(function (btn){
+        btn.click()
+      })
+      cy.get('.blog').eq(0).should('contain', 'Title3')
+      cy.get('.blog').eq(1).should('contain', 'Title2')
+      cy.get('.blog').eq(2).should('contain', 'Title1')
+
+
+      //Add likes
+      cy.get('button:contains("Like")').eq(2).as('blog1')
+      cy.get('@blog1').click().wait(300).click().wait(300).click().then(() => {
+        cy.get('.blog').eq(0).should('contain', 'Title1')
+        cy.get('.blog').eq(1).should('contain', 'Title3')
+        cy.get('.blog').eq(2).should('contain', 'Title2')
+      })
+      // cy.get('@removeButton').click().wait(1000).then(function(){
+      //   cy.contains('Title3').should('not.exist')
     })
   })
 })
