@@ -34,6 +34,8 @@ Cypress.Commands.add('login', (username, password) => {
 })
 Cypress.Commands.add('addBlog', (blog) => {
   const token = JSON.parse(localStorage.getItem('loggedUserBlogList')).token
+  //In fronend, the token is added by setting axios default header.
+  //In cyexpress test, this is done by set the header manually
   const options = {
     method: 'POST',
     url: 'http://localhost:3003/api/blogs',

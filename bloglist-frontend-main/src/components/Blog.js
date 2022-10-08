@@ -26,7 +26,7 @@ const Blog = ({ blog, addLikeHandler, refreshBlogList, user }) => {
         {blog.url}
       </div>
       <div>
-        Likes {blog.likes} <button onClick={() => {
+        Likes <span id='LikesNumber'>{blog.likes}</span> <button onClick={() => {
           addLikeHandler(blog)
           refreshBlogList()
         }}>Like</button>

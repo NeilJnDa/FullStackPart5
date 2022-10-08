@@ -44,21 +44,55 @@ describe('Blog app', function() {
         name: 'TestName',
         password: 'password'
       }
-      const blog = {
+      const blog1 = {
         title : 'Test Title',
         author: 'Test Author',
+        url: 'http://...'
+      }
+      const blog2 = {
+        title : 'Test Title2',
+        author: 'Test Author2',
         url: 'http://...'
       }
       cy.request('POST', 'http://localhost:3003/api/users', user)
       cy.login(user.username, user.password)
         .then(function(){
-          cy.addBlog(blog)
+          cy.addBlog(blog1)
+          cy.addBlog(blog2)
         })
-
+      cy.visit('http://localhost:3000')
     })
 
-    it('The users can like a blog', function(){
-      cy.contains('logged in')
+    it'The users can like a blog', function(){
+      cy.get('button:contains("View")').first().click()
+      cy.get('#LikesNumber').then($num => {
+        const num0 = parseInt($num.text())
+        console.log('Original likes:', (num0).toString())
+
+        cy.get('button:contains("Like")').first().click().then(() => {
+          console.log('Expected likes:', (num0+1).toString())
+          cy.get('#LikesNumber').should('have.text', (num0+1).toString())
+        })
+      })
+      // cy.get('#LikesNumber').then(function(num){
+      //   console.log(num)
+      //   cy.get('button:contains("Like")').first().click().then(function(){
+      //     cy.get('#LikesNumber')
+      //   })
+      // })
+    })
+    it('A blog can be created', function() {
+      cy.get('button:contains("Create New")')
+        .click()
+        .then(function(){
+          cy.get('input[placeholder="Blog Title"]').type('New Title')
+          cy.get('input[placeholder="Name"]').type('New Author')
+          cy.get('input[placeholder="http://...."]').type('New Url')
+        })
+        .then(function(){
+          cy.get('button[type="submit"]').click()
+        })
+      cy.contains('New blog created: ')
     })
   })
 
