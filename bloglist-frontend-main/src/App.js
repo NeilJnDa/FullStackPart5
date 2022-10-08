@@ -6,7 +6,7 @@ import Notification from './components/Notification'
 import Toggle from './components/Toggle'
 
 import './index.css'
-import NewBlogForm from './services/NewBlogForm'
+import NewBlogForm from './components/NewBlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -25,7 +25,6 @@ const App = () => {
       const user = JSON.parse(loggedUserJson)
       setUser(user)
       blogService.setToken(user.token)
-
       blogService.getAll().then((blogs) => {
         setBlogs(blogs)
       })
@@ -44,9 +43,9 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault()
     try{
-      console.log('logged in with', username, password)
-      popMessage('Logged in with', 3)
       const user = await loginService.login({ username, password })
+      console.log('logged in with', username, password)
+      popMessage(`Logged in with ${username}`, 3)
       blogService.setToken(user.token)
       window.localStorage.setItem('loggedUserBlogList', JSON.stringify(user))
       setUser(user)
@@ -55,7 +54,7 @@ const App = () => {
       await refreshBlogList()
     }
     catch(exception){
-      popMessage('Wrong username or password', 3,true)
+      popMessage('Wrong username or password', 20,true)
       console.log(exception.name)
     }
   }
@@ -103,6 +102,7 @@ const App = () => {
           <div>
             Username
             <input
+              id = 'username'
               name = "Username"
               type="text"
               value={username}
@@ -112,13 +112,14 @@ const App = () => {
           <div>
             Password
             <input
+              id = 'password'
               name = "Password"
               type="text"
               value={password}
               onChange = {({ target }) => setPassword(target.value)}
             />
           </div>
-          <button type="submit">login</button>
+          <button id='login-submit' type="submit">login</button>
         </form>
       </div>
     )
