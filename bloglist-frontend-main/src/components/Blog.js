@@ -12,13 +12,13 @@ const Blog = ({ blog, addLikeHandler, refreshBlogList, user }) => {
   }
   if(!visible){
     return(
-      <div style = {blogStyle}>
+      <div style = {blogStyle} id ={blog.title}>
         {blog.title} {blog.author} <button onClick={() => setVisible(true)}>View</button>
       </div>
     )
   }
   else return(
-    <div style = {blogStyle}>
+    <div style = {blogStyle} id ={blog.title}>
       <div>
         {blog.title} <button onClick={() => setVisible(false)}>Hide</button>
       </div>

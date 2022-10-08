@@ -45,13 +45,13 @@ describe('Blog app', function() {
         password: 'password'
       }
       const blog1 = {
-        title : 'Test Title',
-        author: 'Test Author',
+        title : 'Title1',
+        author: 'Author1',
         url: 'http://...'
       }
       const blog2 = {
-        title : 'Test Title2',
-        author: 'Test Author2',
+        title : 'Title2',
+        author: 'Author2',
         url: 'http://...'
       }
       cy.request('POST', 'http://localhost:3003/api/users', user)
@@ -63,7 +63,7 @@ describe('Blog app', function() {
       cy.visit('http://localhost:3000')
     })
 
-    it'The users can like a blog', function(){
+    it('The users can like a blog', function(){
       cy.get('button:contains("View")').first().click()
       cy.get('#LikesNumber').then($num => {
         const num0 = parseInt($num.text())
@@ -94,6 +94,13 @@ describe('Blog app', function() {
         })
       cy.contains('New blog created: ')
     })
-  })
+    it.only('A blog can be deleted', function() {
+      cy.get('button:contains("View")').first().click()
+      cy.get('button:contains("Remove")').first().as('removeButton')
 
+      cy.get('@removeButton').click().wait(1000).then(function(){
+        cy.contains('Title1').should('not.exist')
+      })
+    })
+  })
 })
